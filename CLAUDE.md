@@ -3,8 +3,16 @@
 ## 技术栈
 - 数据库: StarRocks
 - 调度: DolphinScheduler
-- 同步: DataX
+- 同步: CloudCanal, DataX
 - 语言: Python 3.12+, SQL, Shell
+
+## 数据采集架构
+
+| 方式 | 场景 | 工具 |
+|------|------|------|
+| 实时同步 | PostgreSQL 等支持 CDC 的源库 | CloudCanal |
+| 批量同步 | 不支持 CDC 或不能开启 CDC 的源库 | DataX |
+| API 采集 | 不能直连数据库的第三方系统 | Python 脚本 |
 
 ## 数仓分层规范
 

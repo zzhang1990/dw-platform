@@ -6,8 +6,17 @@ StarRocks 数仓平台 - 财务营销主题
 
 - **数据库**: StarRocks
 - **调度**: DolphinScheduler
-- **同步**: DataX
-- **语言**: Python 3.10+, SQL, Shell
+- **同步**: CloudCanal (实时), DataX (批量)
+- **采集**: Python API 脚本
+- **语言**: Python 3.12+, SQL, Shell
+
+## 数据采集架构
+
+| 方式 | 场景 | 工具 |
+|------|------|------|
+| 实时同步 | PostgreSQL 等支持 CDC 的源库 | CloudCanal |
+| 批量同步 | 不支持 CDC 的源库 | DataX |
+| API 采集 | 不能直连数据库的第三方系统 | Python 脚本 |
 
 ## 项目结构
 
