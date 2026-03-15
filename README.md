@@ -8,6 +8,7 @@ StarRocks 数仓平台 - 财务营销主题
 - **调度**: DolphinScheduler
 - **同步**: CloudCanal (实时), DataX (批量)
 - **采集**: Python API 脚本
+- **BI**: 永洪BI
 - **语言**: Python 3.12, Shell
 - **环境管理**: Conda
 
@@ -41,7 +42,9 @@ dw-platform/
 | 层级 | 说明 | 命名规范 |
 |------|------|----------|
 | ODS | 贴源层，原始数据 | `ods_{source}_{table}` |
+| DIM | 维度层，维度数据 | `dim_{dimension}` |
 | DWD | 明细层，清洗标准化 | `dwd_{domain}_{entity}` |
+| DWS | 汇总层，轻度聚合 | `dws_{domain}_{aggregate}` |
 | ADS | 应用层，业务指标 | `ads_{business}_{metric}` |
 
 ## 快速开始
