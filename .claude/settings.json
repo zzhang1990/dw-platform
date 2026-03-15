@@ -1,0 +1,9 @@
+{
+  "project": {
+    "name": "dw-platform",
+    "type": "data-warehouse"
+  },
+  "memory": {
+    "enabled": true
+  }
+}
