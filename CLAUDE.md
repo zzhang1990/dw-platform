@@ -4,7 +4,7 @@
 - 数据库: StarRocks
 - 调度: DolphinScheduler
 - 同步: DataX
-- 语言: Python 3.10+, SQL, Shell
+- 语言: Python 3.12+, SQL, Shell
 
 ## 数仓分层规范
 

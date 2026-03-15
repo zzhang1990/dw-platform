@@ -3,7 +3,7 @@ name = "dw-platform"
 version = "0.1.0"
 description = "StarRocks数仓平台 - 财务营销主题"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = {text = "MIT"}
 authors = [
     {name = "zzhang1990"}
@@ -29,7 +29,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 100
-target-version = ["py310"]
+target-version = ["py312"]
 
 [tool.ruff]
 line-length = 100
