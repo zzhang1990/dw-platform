@@ -29,6 +29,7 @@ dw-platform/
 | DolphinScheduler | 任务调度 | 3.x |
 | CloudCanal | 实时同步 | - |
 | DataX | 批量同步 | - |
+| 永洪BI | BI 报表工具 | - |
 | Python | ETL 开发 | 3.12 |
 | Conda | 环境管理 | - |
 
@@ -45,7 +46,9 @@ dw-platform/
 | 层级 | 说明 | 命名规范 | 示例 |
 |------|------|----------|------|
 | ODS | 贴源层，原始数据 | `ods_{source}_{table}` | `ods_pg_finance_bill` |
+| DIM | 维度层，维度数据 | `dim_{dimension}` | `dim_user`, `dim_product` |
 | DWD | 明细层，清洗标准化 | `dwd_{domain}_{entity}` | `dwd_finance_detail` |
+| DWS | 汇总层，轻度聚合 | `dws_{domain}_{aggregate}` | `dws_user_day` |
 | ADS | 应用层，业务指标 | `ads_{business}_{metric}` | `ads_finance_report` |
 
 ---
@@ -144,11 +147,15 @@ row = query_one("SELECT COUNT(*) AS cnt FROM table")
 
 ```python
 # 按层级组织
+def run_dim_{dimension}(dt: str) -> int: ...
 def run_dwd_{domain}_{entity}(dt: str) -> int: ...
+def run_dws_{domain}_{aggregate}(dt: str) -> int: ...
 def run_ads_{business}_{metric}(dt: str) -> int: ...
 
 # 层级入口函数
+def run_dim(dt: str): ...  # 执行所有 DIM 任务
 def run_dwd(dt: str): ...  # 执行所有 DWD 任务
+def run_dws(dt: str): ...  # 执行所有 DWS 任务
 def run_ads(dt: str): ...  # 执行所有 ADS 任务
 ```
 
@@ -278,7 +285,7 @@ chore: 构建/工具
 ### 创建新 ETL 任务时
 
 1. 在 `scripts/etl/` 创建或修改脚本
-2. 遵循分层规范：ODS → DWD → ADS
+2. 遵循分层规范：ODS → DIM → DWD → DWS → ADS
 3. 使用 `scripts/utils/db.py` 中的数据库工具
 4. 在 `shell/run_etl.sh` 中添加调用入口
 
