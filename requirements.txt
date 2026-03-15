@@ -1,4 +1,9 @@
-pymysql>=1.1.0
+# StarRocks 官方驱动
+starrocks>=1.3.3
+
+# HTTP 请求
 requests>=2.31.0
+
+# 配置管理
 python-dotenv>=1.0.0
 pyyaml>=6.0

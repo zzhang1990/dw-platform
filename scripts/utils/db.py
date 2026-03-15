@@ -1,8 +1,8 @@
 """数据库连接工具"""
 from typing import Optional
 
-import pymysql
-from pymysql.cursors import DictCursor
+from sqlalchemy import create_engine, text
+from sqlalchemy.engine import Engine
 
 from config.settings import (
     STARROCKS_HOST,
@@ -12,58 +12,88 @@ from config.settings import (
     STARROCKS_DATABASE,
 )
 
+# 全局引擎缓存
+_engine: Optional[Engine] = None
 
-def get_connection(database: Optional[str] = None) -> pymysql.Connection:
+
+def get_engine(database: Optional[str] = None) -> Engine:
     """
-    获取 StarRocks 数据库连接
+    获取 StarRocks 数据库引擎
 
     Args:
         database: 数据库名，默认使用配置中的数据库
 
     Returns:
-        pymysql.Connection: 数据库连接对象
+        SQLAlchemy Engine
     """
-    return pymysql.connect(
-        host=STARROCKS_HOST,
-        port=STARROCKS_PORT,
-        user=STARROCKS_USER,
-        password=STARROCKS_PASSWORD,
-        database=database or STARROCKS_DATABASE,
-        charset="utf8mb4",
-        cursorclass=DictCursor,
-    )
+    global _engine
+
+    db = database or STARROCKS_DATABASE
+
+    # 连接字符串格式: starrocks://user:password@host:port/database
+    url = f"starrocks://{STARROCKS_USER}:{STARROCKS_PASSWORD}@{STARROCKS_HOST}:{STARROCKS_PORT}/{db}"
+
+    if _engine is None:
+        _engine = create_engine(
+            url,
+            pool_size=5,
+            max_overflow=10,
+            pool_recycle=3600,
+            echo=False,
+        )
+
+    return _engine
 
 
-def execute_sql(sql: str, params: Optional[dict] = None) -> int:
+def execute_sql(sql: str) -> int:
     """
-    执行 SQL 语句
+    执行 SQL 语句 (INSERT/UPDATE/DELETE)
 
     Args:
         sql: SQL 语句
-        params: 参数
 
     Returns:
         影响行数
     """
-    with get_connection() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute(sql, params)
-            conn.commit()
-            return cursor.rowcount
+    engine = get_engine()
+    with engine.connect() as conn:
+        result = conn.execute(text(sql))
+        conn.commit()
+        return result.rowcount
 
 
-def query_sql(sql: str, params: Optional[dict] = None) -> list[dict]:
+def query_sql(sql: str) -> list[dict]:
     """
     查询 SQL
 
     Args:
         sql: SQL 语句
-        params: 参数
 
     Returns:
         查询结果列表
     """
-    with get_connection() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute(sql, params)
-            return cursor.fetchall()
+    engine = get_engine()
+    with engine.connect() as conn:
+        result = conn.execute(text(sql))
+        columns = result.keys()
+        return [dict(zip(columns, row)) for row in result.fetchall()]
+
+
+def query_one(sql: str) -> Optional[dict]:
+    """
+    查询单条记录
+
+    Args:
+        sql: SQL 语句
+
+    Returns:
+        单条记录或 None
+    """
+    engine = get_engine()
+    with engine.connect() as conn:
+        result = conn.execute(text(sql))
+        row = result.fetchone()
+        if row is None:
+            return None
+        columns = result.keys()
+        return dict(zip(columns, row))
