@@ -7,6 +7,7 @@
 - 类型: 数据仓库
 - 数据库: StarRocks
 - 调度: DolphinScheduler
+- 环境管理: Conda
 
 ## 编码规范
 - SQL 关键字使用大写
@@ -15,13 +16,13 @@
 - 遵循 CLAUDE.md 中的分层规范
 
 ## 文件匹配
-- ETL 脚本: `scripts/etl/*.py`
+- ETL 脚本: `scripts/etl/etl.py`
 - API 采集: `scripts/api/*.py`
-- DataX 配置: `datax/**/*.json`
+- DataX 配置: `datax/*.json`
 - Shell 脚本: `shell/*.sh`
 
 ## 代码生成规则
 1. SQL 内嵌 Python，使用 f-string 格式化参数
-2. DataX 配置必须包含错误处理
+2. ETL 按层级组织: run_dwd(), run_ads()
 3. Shell 脚本必须包含日志记录
-4. ETL 脚本必须按主题划分: finance_etl.py, marketing_etl.py
+4. 使用 conda 管理环境

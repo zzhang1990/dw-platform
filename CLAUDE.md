@@ -4,7 +4,8 @@
 - 数据库: StarRocks
 - 调度: DolphinScheduler
 - 同步: CloudCanal, DataX
-- 语言: Python 3.12+, Shell
+- 语言: Python 3.12, Shell
+- 环境管理: Conda
 
 ## 数据采集架构
 
@@ -16,14 +17,11 @@
 
 ## 数仓分层规范
 
-### 分层说明
-- **ODS** (贴源层): 保持原始数据，表名 `ods_{source}_{table}`
-- **DWD** (明细层): 清洗标准化数据，表名 `dwd_{domain}_{entity}`
-- **ADS** (应用层): 面向业务指标，表名 `ads_{business}_{metric}`
-
-### 主题划分
-- **finance**: 财务主题 - 账单、收入、成本
-- **marketing**: 营销主题 - 活动、用户行为、转化
+| 层级 | 说明 | 命名规范 |
+|------|------|----------|
+| ODS | 贴源层，原始数据 | `ods_{source}_{table}` |
+| DWD | 明细层，清洗标准化 | `dwd_{domain}_{entity}` |
+| ADS | 应用层，业务指标 | `ads_{business}_{metric}` |
 
 ## 编码规范
 
@@ -42,26 +40,45 @@
 - 包含日志记录
 
 ## 文件命名规范
-- ETL 脚本: `{topic}_etl.py`，如 `finance_etl.py`
-- API 采集: `fetch_{source}_data.py`
-- DataX: `{source}_to_starrocks_{table}.json`
+- ETL 脚本: `scripts/etl/etl.py`
+- API 采集: `scripts/api/fetch_{source}_data.py`
+- DataX: `datax/{source}_to_starrocks_{table}.json`
+
+## 环境配置
+
+```bash
+# 创建 conda 环境
+conda env create -f environment.yml
+
+# 激活环境
+conda activate dw-platform
+
+# 更新环境
+conda env update -f environment.yml
+```
 
 ## DolphinScheduler 任务
-- ETL 任务: `bash shell/run_etl.sh <finance|marketing> <dt>`
-- DataX 任务: `bash shell/run_datax.sh <config.json>`
-- API 采集: `bash shell/run_api.sh <script.py>`
+
+```bash
+# 执行完整 ETL
+bash shell/run_etl.sh 2024-01-01
+
+# 只执行 DWD 层
+bash shell/run_etl.sh 2024-01-01 dwd
+
+# 只执行 ADS 层
+bash shell/run_etl.sh 2024-01-01 ads
+```
 
 ## 常用命令
-```bash
-# 执行财务主题 ETL
-bash shell/run_etl.sh finance 2024-01-01
 
-# 执行营销主题 ETL
-bash shell/run_etl.sh marketing 2024-01-01
+```bash
+# 执行 ETL
+python scripts/etl/etl.py --dt 2024-01-01 --layer all
+
+# 执行 API 数据采集
+python scripts/api/fetch_data.py --dt 2024-01-01
 
 # 运行 DataX 同步
 bash shell/run_datax.sh mysql_to_starrocks_user.json
-
-# 执行 API 数据采集
-python scripts/api/fetch_marketing_data.py --dt 2024-01-01
 ```

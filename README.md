@@ -8,7 +8,8 @@ StarRocks 数仓平台 - 财务营销主题
 - **调度**: DolphinScheduler
 - **同步**: CloudCanal (实时), DataX (批量)
 - **采集**: Python API 脚本
-- **语言**: Python 3.12+, Shell
+- **语言**: Python 3.12, Shell
+- **环境管理**: Conda
 
 ## 数据采集架构
 
@@ -30,7 +31,9 @@ dw-platform/
 ├── datax/           # DataX 同步配置
 ├── cloudcanal/      # CloudCanal 配置文档
 ├── shell/           # DolphinScheduler 执行脚本
-└── tests/           # 测试
+├── tests/           # 测试
+├── environment.yml  # Conda 环境配置
+└── requirements.txt # pip 依赖
 ```
 
 ## 数仓分层
@@ -44,12 +47,15 @@ dw-platform/
 ## 快速开始
 
 ```bash
-# 安装依赖
-pip install -r requirements.txt
+# 创建 conda 环境
+conda env create -f environment.yml
+
+# 激活环境
+conda activate dw-platform
 
 # 配置环境变量
 cp .env.example .env
 
 # 执行 ETL
-bash shell/run_etl.sh finance 2024-01-01
+bash shell/run_etl.sh 2024-01-01
 ```
