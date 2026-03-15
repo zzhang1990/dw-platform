@@ -4,25 +4,141 @@
 - 使用中文回复
 
 ## 项目信息
-- 类型: 数据仓库
-- 数据库: StarRocks
-- 调度: DolphinScheduler
-- 环境管理: Conda
+
+| 类型 | 数据仓库平台 |
+|------|-------------|
+| 数据库 | StarRocks 3.x |
+| 调度 | DolphinScheduler 3.x |
+| 同步 | CloudCanal, DataX |
+| 语言 | Python 3.12, Shell |
+| 环境 | Conda |
+
+## 目录结构
+
+```
+dw-platform/
+├── config/           # 配置模块 (settings.py)
+├── scripts/          # 业务脚本
+│   ├── etl/          # ETL 任务
+│   ├── api/          # API 数据采集
+│   └── utils/        # 公共工具 (db.py)
+├── shell/            # Shell 脚本 (DolphinScheduler 调用)
+├── datax/            # DataX 配置文件
+├── cloudcanal/       # CloudCanal 任务配置
+└── tests/            # 单元测试
+```
+
+## 数仓分层规范
+
+| 层级 | 命名规范 | 示例 |
+|------|----------|------|
+| ODS | `ods_{source}_{table}` | `ods_pg_finance_bill` |
+| DWD | `dwd_{domain}_{entity}` | `dwd_finance_detail` |
+| ADS | `ads_{business}_{metric}` | `ads_finance_report` |
 
 ## 编码规范
-- SQL 关键字使用大写
-- SQL 内嵌在 Python 脚本中，使用 f-string 传参
-- Python 使用类型注解
-- 遵循 CLAUDE.md 中的分层规范
 
-## 文件匹配
-- ETL 脚本: `scripts/etl/etl.py`
-- API 采集: `scripts/api/*.py`
-- DataX 配置: `datax/*.json`
-- Shell 脚本: `shell/*.sh`
+### Python
+```python
+# 类型注解 + 文档字符串
+def run_dwd_finance_detail(dt: str) -> int:
+    """
+    DWD 层：财务账单明细清洗
+
+    Args:
+        dt: 日期参数 YYYY-MM-DD
+
+    Returns:
+        影响行数
+    """
+    sql = f"""
+        INSERT INTO dwd_finance_detail
+        SELECT ... FROM ods_pg_finance_bill
+        WHERE dt = '{dt}'
+    """
+    return execute_sql(sql)
+```
+
+### SQL
+- 关键字大写 (SELECT, FROM, WHERE, GROUP BY 等)
+- 使用 f-string 传入参数
+- 缩进清晰，每列一行
+
+### Shell
+```bash
+#!/bin/bash
+# 脚本说明
+set -e
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] 开始执行..."
+```
+
+## 数据库操作
+
+```python
+from scripts.utils.db import execute_sql, query_sql, query_one
+
+# 执行 DML
+rows = execute_sql("INSERT INTO ...")
+
+# 查询多行
+results = query_sql("SELECT ...")
+
+# 查询单行
+row = query_one("SELECT ...")
+```
+
+## ETL 函数命名
+
+```python
+# 层级任务函数
+def run_dwd_{domain}_{entity}(dt: str) -> int: ...
+
+# 层级入口函数
+def run_dwd(dt: str): ...
+def run_ads(dt: str): ...
+
+# 主入口
+def run_etl(dt: str, layer: str = "all"): ...
+```
+
+## 文件命名
+
+| 类型 | 路径 | 命名 |
+|------|------|------|
+| ETL | `scripts/etl/` | `{theme}.py` |
+| API | `scripts/api/` | `fetch_{source}_data.py` |
+| DataX | `datax/` | `{source}_to_starrocks_{table}.json` |
+| Shell | `shell/` | `run_{task}.sh` |
 
 ## 代码生成规则
-1. SQL 内嵌 Python，使用 f-string 格式化参数
-2. ETL 按层级组织: run_dwd(), run_ads()
-3. Shell 脚本必须包含日志记录
-4. 使用 conda 管理环境
+
+1. **遵循分层规范**: ODS → DWD → ADS
+2. **SQL 内嵌 Python**: 使用 f-string 格式化参数
+3. **使用项目工具**: 从 `scripts.utils.db` 导入数据库函数
+4. **日志记录**: 使用 `logging` 模块，格式 `%(asctime)s - %(levelname)s - %(message)s`
+5. **错误处理**: Shell 脚本必须 `set -e`
+
+## 常用命令
+
+```bash
+# ETL
+python scripts/etl/etl.py --dt 2024-01-01 --layer all
+bash shell/run_etl.sh 2024-01-01 dwd
+
+# API 采集
+python scripts/api/fetch_marketing_data.py --dt 2024-01-01
+
+# 测试
+pytest tests/ -v
+```
+
+## Git Commit 规范
+
+| 类型 | 说明 |
+|------|------|
+| feat | 新功能 |
+| fix | 修复 bug |
+| docs | 文档更新 |
+| refactor | 重构 |
+| test | 测试 |
+| chore | 构建/工具 |
