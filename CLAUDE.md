@@ -4,7 +4,7 @@
 - 数据库: StarRocks
 - 调度: DolphinScheduler
 - 同步: CloudCanal, DataX
-- 语言: Python 3.12+, SQL, Shell
+- 语言: Python 3.12+, Shell
 
 ## 数据采集架构
 
@@ -29,13 +29,12 @@
 
 ### Python
 - 使用类型注解
-- 遵循 PEP 8
-- 使用 Black 格式化
+- SQL 内嵌在 Python 脚本中
+- 遵循 PEP 8，使用 Black 格式化
 
 ### SQL
 - 关键字大写 (SELECT, FROM, WHERE 等)
-- 使用 4 空格缩进
-- 表名、字段名使用小写下划线
+- 使用 f-string 传入参数
 
 ### Shell
 - 使用 `#!/bin/bash` 开头
@@ -43,21 +42,25 @@
 - 包含日志记录
 
 ## 文件命名规范
-- SQL: 小写下划线，如 `ods_finance_bill.sql`
-- Python: 小写下划线，如 `fetch_marketing_data.py`
+- ETL 脚本: `{topic}_etl.py`，如 `finance_etl.py`
+- API 采集: `fetch_{source}_data.py`
 - DataX: `{source}_to_starrocks_{table}.json`
 
 ## DolphinScheduler 任务
-- 所有任务通过 `shell/` 目录下的脚本执行
-- 参数: `--dt` 日期、`--sql` SQL 文件路径
+- ETL 任务: `bash shell/run_etl.sh <finance|marketing> <dt>`
+- DataX 任务: `bash shell/run_datax.sh <config.json>`
+- API 采集: `bash shell/run_api.sh <script.py>`
 
 ## 常用命令
 ```bash
-# 执行 SQL 脚本
-bash shell/run_etl.sh sql/finance/dwd_finance_detail.sql --dt 2024-01-01
+# 执行财务主题 ETL
+bash shell/run_etl.sh finance 2024-01-01
+
+# 执行营销主题 ETL
+bash shell/run_etl.sh marketing 2024-01-01
 
 # 运行 DataX 同步
-bash shell/run_datax.sh datax/finance/sync_finance_bill.json
+bash shell/run_datax.sh mysql_to_starrocks_user.json
 
 # 执行 API 数据采集
 python scripts/api/fetch_marketing_data.py --dt 2024-01-01

@@ -8,7 +8,7 @@ StarRocks 数仓平台 - 财务营销主题
 - **调度**: DolphinScheduler
 - **同步**: CloudCanal (实时), DataX (批量)
 - **采集**: Python API 脚本
-- **语言**: Python 3.12+, SQL, Shell
+- **语言**: Python 3.12+, Shell
 
 ## 数据采集架构
 
@@ -23,17 +23,14 @@ StarRocks 数仓平台 - 财务营销主题
 ```
 dw-platform/
 ├── config/          # 配置文件
-├── sql/             # SQL 脚本（按主题分层）
-│   ├── finance/     # 财务主题
-│   └── marketing/   # 营销主题
-├── datax/           # DataX 同步配置
 ├── scripts/         # Python 脚本
 │   ├── api/         # API 数据采集
-│   ├── etl/         # ETL 脚本
+│   ├── etl/         # ETL 脚本 (SQL 内嵌)
 │   └── utils/       # 工具函数
+├── datax/           # DataX 同步配置
+├── cloudcanal/      # CloudCanal 配置文档
 ├── shell/           # DolphinScheduler 执行脚本
-├── tests/           # 测试
-└── docs/            # 文档
+└── tests/           # 测试
 ```
 
 ## 数仓分层
@@ -53,6 +50,6 @@ pip install -r requirements.txt
 # 配置环境变量
 cp .env.example .env
 
-# 执行 SQL
-bash shell/run_etl.sh sql/finance/dwd_finance_detail.sql 2024-01-01
+# 执行 ETL
+bash shell/run_etl.sh finance 2024-01-01
 ```
