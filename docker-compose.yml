@@ -1,0 +1,55 @@
+# docker-compose.yml for zzhang1990/dw-platform
+version: '3.8'  # Specify the version of the docker-compose file
+
+services:
+  starrocks:
+    image: starrocks/starrocks-database:latest # Use the latest StarRocks database image
+    volumes:
+      - starrocks_data:/var/lib/starrocks   # Volume for data persistence
+    environment:
+      - ENV_FILE_ENV_VAR1=value1  # Override with values from .env
+      - ENV_FILE_ENV_VAR2=value2
+    networks:
+      - dw-network  # Connect to the dw-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M   # Set resource limits for CPU and memory
+      restart: unless-stopped  # Restart policy
+    healthcheck:
+      test: [ "CMD", "pg_isready" ] # Replace with appropriate health check
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  dw-platform:
+    image: zzhang1990/dw-platform:latest # Use the latest application image
+    volumes:
+      - dw_platform_data:/app/data  # Volume for data persistence
+    environment:
+      - ENV_FILE_ENV_VAR1=value1  # Override with values from .env
+      - ENV_FILE_ENV_VAR2=value2
+    networks:
+      - dw-network  # Connect to the dw-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M   # Set resource limits for CPU and memory
+      restart: unless-stopped  # Restart policy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ] # Replace with appropriate health check
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  dw-network:
+    driver: bridge  # Use bridge network for service communication
+
+volumes:
+  starrocks_data:
+    driver: local
+  dw_platform_data:
+    driver: local
