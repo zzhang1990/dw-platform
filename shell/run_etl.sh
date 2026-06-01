@@ -1,12 +1,13 @@
 #!/bin/bash
 # ETL 任务执行脚本
-# 用法: bash run_etl.sh <dt> <layer>
-# layer: dwd/ads/all
+# 用法: bash run_etl.sh <dt> <layer> [--dry-run]
+# layer: dim/dwd/dws/ads/all
 
-set -e
+set -euo pipefail
 
 DT=${1:-$(date +%Y-%m-%d)}
 LAYER=${2:-all}
+DRY_RUN=${3:-}
 
 SCRIPT_DIR=$(dirname "$0")
 PROJECT_DIR=$(dirname "$SCRIPT_DIR")
@@ -20,7 +21,11 @@ echo "========================================"
 
 cd "$PROJECT_DIR"
 
-python scripts/etl/etl.py --dt "$DT" --layer "$LAYER"
+if [ "$DRY_RUN" = "--dry-run" ]; then
+    python scripts/etl/etl.py --dt "$DT" --layer "$LAYER" --dry-run
+else
+    python scripts/etl/etl.py --dt "$DT" --layer "$LAYER"
+fi
 
 echo "========================================"
 echo "ETL 任务执行完成"

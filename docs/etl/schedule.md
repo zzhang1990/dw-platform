@@ -13,9 +13,11 @@
 ```bash
 # Python 任务
 python ${project_path}/scripts/etl/etl.py --dt ${dt} --layer ${layer}
+python ${project_path}/scripts/etl/etl.py --dt ${dt} --layer ${layer} --dry-run
 
 # Shell 任务
 bash ${project_path}/shell/run_etl.sh ${dt} ${layer}
+bash ${project_path}/shell/run_etl.sh ${dt} ${layer} --dry-run
 ```
 
 ### 时间参数
@@ -29,6 +31,10 @@ bash ${project_path}/shell/run_etl.sh ${dt} ${layer}
 ---
 
 ## 调度依赖
+
+公开仓库中的脱敏纵向样例见
+[`demo-finance-chain.md`](demo-finance-chain.md)。实际接入 DolphinScheduler 前，先通过
+`--dry-run` 审查完整 SQL。
 
 ### DAG 设计原则
 

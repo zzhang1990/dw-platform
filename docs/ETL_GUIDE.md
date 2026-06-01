@@ -1,5 +1,15 @@
 # ETL Development Guide
 
+## Runnable Sanitized Example
+
+The repository includes a sanitized vertical finance chain with StarRocks DDL, seed data,
+validation queries, dry-run support, and shadow-table `SWAP` publishing:
+
+- [Demo finance chain guide](etl/demo-finance-chain.md)
+- [StarRocks DDL](../examples/starrocks/demo_finance_chain.sql)
+- [Seed data](../examples/starrocks/demo_finance_seed.sql)
+- [Validation queries](../examples/starrocks/demo_finance_validation.sql)
+
 ## Data Warehouse Architecture Overview
 In this section, we will explore the overall architecture of our data warehouse, including the various layers and components that constitute the system.
 
