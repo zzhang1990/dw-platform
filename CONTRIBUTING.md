@@ -1,59 +1,57 @@
 # Contributing to DW Platform
 
-Thank you for considering contributing to the DW Platform! We welcome contributions from developers of all skill levels. Below are some guidelines to help you get started:
+Thank you for considering a contribution to DW Platform. The project is currently an early
+preview, so focused documentation, examples, tests, and small implementation slices are
+especially useful.
 
 ## Development Setup
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/zzhang1990/dw-platform.git
-   cd dw-platform
-   ```
 
-2. **Install Dependencies**
-   Make sure you have the necessary dependencies installed. You can use the following command:
-   ```bash
-   npm install
-   ```
+```bash
+git clone https://github.com/zzhang1990/dw-platform.git
+cd dw-platform
 
-3. **Set Up Your Development Environment**
-   Configure your local development environment as needed, based on the setup instructions in the repository readme.
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+```
 
-## Testing Requirements
-- Before submitting your changes, it's critical to ensure that all tests pass. Use the following command to run the tests:
-  ```bash
-  npm test
-  ```
-- Please add new tests for any new features or bug fixes you implement to ensure code quality.
+## Run Checks
 
-## Code Review Process
-- All contributions will be reviewed by a maintainer. Make sure to submit a pull request with a clear description of your changes.
-- Be open to feedback and be prepared to make necessary modifications based on the review comments.
+Run the unit tests:
 
-## Pull Request Procedures
-1. **Fork the Repository**
-   - Click the "Fork" button in the top right corner of the repo page to create your own copy.
+```bash
+python -m pytest -q
+```
 
-2. **Create a New Branch**
-   - Use a descriptive name for your branch that reflects the feature or fix you are working on:
-   ```bash
-   git checkout -b feature/my-new-feature
-   ```
+Run a lightweight ETL entry-point smoke check:
 
-3. **Commit Your Changes**
-   - Make your changes and commit them with a clear commit message:
-   ```bash
-   git commit -m 'Add some feature'
-   ```
+```bash
+python scripts/etl/etl.py --dt 2024-01-01 --layer all
+```
 
-4. **Push Your Changes**
-   ```bash
-   git push origin feature/my-new-feature
-   ```
+## Contribution Workflow
 
-5. **Open a Pull Request**
-   - Go to the original repository, you will see an option to create a pull request. Click on it and fill in the details.
+1. Search the existing [Issues](https://github.com/zzhang1990/dw-platform/issues) before
+   starting work.
+2. Create a focused branch, for example `feat/starrocks-ddl-examples`.
+3. Keep the change scoped and add or update the most relevant tests.
+4. Run the checks above.
+5. Open a Pull Request with a concise summary and verification notes.
 
-6. **Include Related Issues**
-   - If your pull request addresses an issue, be sure to include `Fixes #issue_number` or `Closes #issue_number` in the description.
-   
-We appreciate your contributions and are excited to work together on the DW Platform!
+Use `Fixes #issue_number` or `Closes #issue_number` in the Pull Request description when
+the change resolves an existing Issue.
+
+## Areas Where Contributions Help
+
+- StarRocks table DDL and layered modeling examples.
+- DolphinScheduler workflow samples.
+- CloudCanal and DataX setup examples.
+- Data quality checks and automated tests.
+- Documentation corrections and deployment notes.
+
+## Code Style
+
+- Use Python type annotations for new or changed functions.
+- Keep SQL keywords uppercase and format longer queries for readability.
+- Prefer small, reviewable changes that match the existing project structure.
